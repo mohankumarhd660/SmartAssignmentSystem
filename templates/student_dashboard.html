@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h4 fw-bold mb-1">Student Dashboard</h1>
+        <p class="text-muted mb-0">View upcoming assignments and track your progress.</p>
+    </div>
+    <a href="{{ url_for('student_analytics') }}" class="btn btn-outline-primary">
+        Performance Analytics
+    </a>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+        <h2 class="h6 fw-bold mb-3">Assignments</h2>
+        {% if assignments %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Teacher</th>
+                            <th>Due</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in assignments %}
+                            {% set sub = submissions_by_assignment.get(a.id) %}
+                            <tr>
+                                <td>{{ a.title }}</td>
+                                <td>{{ a.teacher.name }}</td>
+                                <td>{{ a.due_date.strftime('%d %b %Y, %I:%M %p') }}</td>
+                                <td>
+                                    {% if sub %}
+                                        {% if sub.status == 'graded' %}
+                                            <span class="badge bg-success">Graded</span>
+                                        {% else %}
+                                            <span class="badge bg-info text-dark">Submitted</span>
+                                        {% endif %}
+                                    {% else %}
+                                        {% if a.due_date < now %}
+                                            <span class="badge bg-danger">Missed</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if sub and sub.feedback %}
+                                        {{ sub.feedback.score }}/{{ sub.feedback.max_score }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('submit_assignment', assignment_id=a.id) }}"
+                                       class="btn btn-sm {% if sub %}btn-outline-primary{% else %}btn-primary{% endif %}">
+                                        {% if sub %}Update / View{% else %}Submit{% endif %}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">No assignments available right now.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
