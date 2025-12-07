@@ -42,12 +42,24 @@ def export_paths(paths):
                 print(f"Skipping {p} (status {resp.status_code})")
 
 
+def create_redirects():
+    """Create Netlify _redirects file for proper routing."""
+    redirects_content = """/login  /login.html  200
+/register  /register.html  200
+/  /index.html  200
+"""
+    redirects_file = BUILD_DIR / "_redirects"
+    redirects_file.write_text(redirects_content, encoding="utf-8")
+    print(f"Wrote {redirects_file}")
+
+
 def main():
     # Pages to export. Add more public routes if you have them.
     paths = ["/", "/login", "/register"]
     clean_build()
     copy_static()
     export_paths(paths)
+    create_redirects()
     print(f"Static export complete. See {BUILD_DIR.resolve()}")
 
 
