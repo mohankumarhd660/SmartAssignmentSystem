@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h1 class="h4 fw-bold mb-1">Teacher Dashboard</h1>
+        <p class="text-muted mb-0">Create assignments and review student work.</p>
+    </div>
+    <a href="{{ url_for('create_assignment') }}" class="btn btn-primary">
+        + New Assignment
+    </a>
+</div>
+
+<div class="row mb-4 g-3">
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Assignments</p>
+                <h3 class="fw-bold mb-0">{{ total_assignments }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Total Submissions</p>
+                <h3 class="fw-bold mb-0">{{ total_submissions }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Graded</p>
+                <h3 class="fw-bold mb-0 text-success">{{ graded_submissions }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Pending Review</p>
+                <h3 class="fw-bold mb-0 text-warning">{{ pending_submissions }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h6 mb-0">Your Assignments</h2>
+        </div>
+        {% if assignments %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Due Date</th>
+                            <th>Created</th>
+                            <th>Submissions</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                            <tr>
+                                <td>{{ assignment.title }}</td>
+                                <td>{{ assignment.due_date.strftime('%d %b %Y, %I:%M %p') }}</td>
+                                <td>{{ assignment.created_at.strftime('%d %b %Y') }}</td>
+                                <td>{{ assignment.submissions|length }}</td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('view_assignment', assignment_id=assignment.id) }}" class="btn btn-outline-primary btn-sm">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">No assignments yet. Create your first one!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 rounded-4 mt-3">
+            <div class="card-body p-4">
+                <h2 class="h5 fw-bold mb-1">{{ assignment.title }}</h2>
+                <p class="text-muted small mb-3">
+                    Due {{ assignment.due_date.strftime('%d %b %Y, %I:%M %p') }}
+                </p>
+                <p class="mb-3">{{ assignment.description }}</p>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Text Response (optional)</label>
+                        <textarea class="form-control" name="text_response" rows="4">{{ submission.text_response if submission else '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Upload File (PDF / Image) (optional)</label>
+                        <input type="file" class="form-control" name="file" accept=".pdf,.png,.jpg,.jpeg,.gif">
+                        {% if submission and submission.file_path %}
+                            <div class="form-text">
+                                Current file:
+                                <a href="{{ url_for('uploaded_file', filename=submission.file_path) }}" target="_blank">Download</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if submission %}
+                        <p class="small mb-2">
+                            <strong>Last submitted:</strong> {{ submission.submitted_at.strftime('%d %b %Y, %I:%M %p') }}
+                        </p>
+                        <p class="small mb-2">
+                            <strong>Plagiarism score:</strong> {{ submission.plagiarism_score }}%
+                        </p>
+                        {% if submission.feedback %}
+                            <div class="alert alert-info small">
+                                Latest feedback: {{ submission.feedback.comments or 'No comments' }}<br>
+                                Score: {{ submission.feedback.score }}/{{ submission.feedback.max_score }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url_for('student_dashboard') }}" class="btn btn-light me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            {% if submission %}Update Submission{% else %}Submit Assignment{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
